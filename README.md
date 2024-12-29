@@ -7,7 +7,7 @@
  Open an equipment and hit "\\". Do this for every equipment. 
 ### Automatically Record Stats
  Open a NIKKE page and hit "+". This currently only works for 1080p.
-
+### After Recording All Stats
  When you are done, type "\~". In your command line window, type "\~" again to finalize the stats.
  They should now be printed out like this:
 
@@ -26,6 +26,7 @@
  Individually store gear stats\
  Allow you to store data in a discord bot\
  Allow it to run on CUDA but I'm lazy and its very small work so I haven't felt the need to do anything
+ Just realized that if you haven't fully upgraded an equipment it takes up a different area. Great.
 
 ## Limitations
   OCR will sometimes just confused numbers for letters - I don't think I can catch all of these but I do print these out for the user to use to fill in later.\
