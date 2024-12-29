@@ -1,7 +1,6 @@
 # Nikke-OL-Summarizer
 Summarizes your [Overloaded equipment](https://nikke.gg/overload-equipment/) stats.
 
-
 ## Setup on Windows
 1. Install Python
 1. Install the requirements, it is recommended to create a virtual environment first:
@@ -17,14 +16,14 @@ Summarizes your [Overloaded equipment](https://nikke.gg/overload-equipment/) sta
 
 	`python readmystats.py`
 
-
 ### Manually Opening Stats
 1. Open an equipment and hit `\`. Do this for every equipment.
-
 
 ### Automatically Record Stats
 1. Open a NIKKE page and hit `+`. This currently only works for 1080p.
 1. When you are done, type `~`.
+
+### After Recording All Stats
 1. In your command line window, type `~` again to finalize the stats.
 1. They should now be printed out like this:
 ```
@@ -38,14 +37,13 @@ Increase Critical Rate: 5.37
 Increase DEF: 4.77
 ```
 
-
 ## TODO
 - Automate the gear selection/screenshotting process
 - Allow you to evaluate gear from multiple NIKKE
 - Individually store gear stats
 - Allow you to store data in a discord bot
 - Allow it to run on CUDA. - but I'm lazy and its very small work so I haven't felt the need to do anything
-
+- Just realized that if you haven't fully upgraded an equipment it takes up a different area. Great.
 
 ## Limitations
 - OCR will sometimes just confused numbers for letters. - I don't think I can catch all of these but I do print these out for the user to use to fill in later.
