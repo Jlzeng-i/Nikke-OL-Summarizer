@@ -6,8 +6,9 @@ if not pyuac.isUserAdmin():
     print("Re-launching as admin!")
     pyuac.runAsAdmin()
     sys.exit()
-else:        
+else:
     pass
+
 mouse = Controller()
 mouse.position = (1650, 766)
 mouse.press(Button.left)

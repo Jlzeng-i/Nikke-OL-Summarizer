@@ -1,6 +1,6 @@
 import easyocr
-from PIL import Image, ImageGrab 
-import numpy as np       
+from PIL import Image, ImageGrab
+import numpy as np
 from pynput import keyboard
 from pynput.mouse import Button, Controller
 import pyuac
@@ -8,9 +8,7 @@ import os
 import sys
 import time
 
-
 #Load all possible values for every substat
-
 possible_values = dict()
 with open("possiblevalues.txt") as file:
     for line in file:
@@ -18,16 +16,17 @@ with open("possiblevalues.txt") as file:
         raw_split[-1] = raw_split[-1].replace("\n", "")
         possible_values[raw_split[0]] = raw_split[1:]
 reader = easyocr.Reader(['en'])
-# IMAGE_PATH => Path to the image 
+
+# IMAGE_PATH => Path to the image
 def alter_image(IMAGE_PATH="image.png"):
-    img = Image.open(IMAGE_PATH).convert('RGB') 
+    img = Image.open(IMAGE_PATH).convert('RGB')
     newsize = (1920, 1080)
     img = img.resize(newsize)
 
     img.crop((700, 750, 1156, 860)).save(IMAGE_PATH)
 
 #uncomment to load new image
-#alter_image("image.png") 
+#alter_image("image.png")
 
 def read_image(path="tmp_file.png"):
     result = reader.readtext(path)
@@ -35,6 +34,7 @@ def read_image(path="tmp_file.png"):
     for detection in result:
         result_string += detection[1] + " "
     return result_string
+
 
 def evaluate_result(result_string, final_stats):
     result_string = result_string.replace("Effect not obtained ", "")
@@ -109,13 +109,14 @@ def click_on(position, mouse):
     mouse.press(Button.left)
     time.sleep(0.025)
     mouse.release(Button.left)
-    
+
+
 def screenshot_script(image_paths):
     print('Time to run screenshot script!')
     x = len(image_paths) + 1
     filename = "tmp" + str(x) + ".png"
     screenshot_screen(filename)
-    alter_image(filename) 
+    alter_image(filename)
     image_paths.append(filename)
 
 
@@ -124,12 +125,13 @@ def screenshot_screen(filename):
     screenshot.save(filename)
     screenshot.close()
 
+
 if __name__=="__main__":
     if not pyuac.isUserAdmin():
         print("Re-launching as admin!")
         pyuac.runAsAdmin()
         sys.exit()
-    else:        
+    else:
         pass
     final_stats = dict()
     for key in possible_values:
@@ -140,7 +142,7 @@ if __name__=="__main__":
             on_press=on_press,
             on_release=on_release) as listener:
         listener.join()
-    
+
     #After collecting images, do the reading all at once
     dir_list = os.listdir()
     #print(dir_list)
@@ -155,12 +157,12 @@ if __name__=="__main__":
     for stat in final_stats:
         if final_stats[stat] != 0:
             print(stat + ": " + str(final_stats[stat]))
-    
+
     print("Press escape to leave")
     with keyboard.Listener(
             on_press=on_release,
             on_release=on_release) as listener:
         listener.join()
-    
+
     for path in image_paths:
-        os.remove(path) 
+        os.remove(path)
