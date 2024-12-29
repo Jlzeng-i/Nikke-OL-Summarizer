@@ -2,9 +2,11 @@ import easyocr
 from PIL import Image, ImageGrab 
 import numpy as np       
 from pynput import keyboard
+from pynput.mouse import Button, Controller
 import pyuac
 import os
 import sys
+import time
 
 
 #Load all possible values for every substat
@@ -55,6 +57,7 @@ def evaluate_result(result_string, final_stats):
                 print(stat_split)
                 print("You can manually input this to accurately represent your equipment.")
 
+
 image_paths = list()
 def on_press(key):
     try:
@@ -65,18 +68,56 @@ def on_press(key):
         # self.keys.append(k)  # store it in global-like variable
         print('Exiting!')
         exit()
+    if k == '+':
+        """The current pointer position is (1324, 616)
+            The current pointer position is (1434, 627)
+            The current pointer position is (1329, 704)
+            The current pointer position is (1436, 719)"""
+        mouse = Controller()
+        #moves to the first equipment
+        click_on((1324, 616), mouse=mouse)
+        time.sleep(0.3)
+        screenshot_script(image_paths)
+        click_on((1434, 627), mouse=mouse)
+        time.sleep(0.1)
+        click_on((1434, 627), mouse=mouse)
+        time.sleep(0.3)
+        screenshot_script(image_paths)
+        click_on((1329, 704), mouse=mouse)
+        time.sleep(0.1)
+        click_on((1329, 704), mouse=mouse)
+        time.sleep(0.3)
+        screenshot_script(image_paths)
+        click_on((1436, 719), mouse=mouse)
+        time.sleep(0.1)
+        click_on((1436, 719), mouse=mouse)
+        time.sleep(0.3)
+        screenshot_script(image_paths)
     if k == '\\':
-        print('Time to run screenshot script!')
-        x = len(image_paths) + 1
-        filename = "tmp" + str(x) + ".png"
-        screenshot_screen(filename)
-        alter_image(filename) 
-        image_paths.append(filename)
+        screenshot_script(image_paths)
+
 
 def on_release(key):
     if key == keyboard.Key.esc:
         # Stop listener
         exit()
+
+
+def click_on(position, mouse):
+    mouse.position = position
+    time.sleep(0.05)
+    mouse.press(Button.left)
+    time.sleep(0.025)
+    mouse.release(Button.left)
+    
+def screenshot_script(image_paths):
+    print('Time to run screenshot script!')
+    x = len(image_paths) + 1
+    filename = "tmp" + str(x) + ".png"
+    screenshot_screen(filename)
+    alter_image(filename) 
+    image_paths.append(filename)
+
 
 def screenshot_screen(filename):
     screenshot = ImageGrab.grab()
@@ -110,7 +151,6 @@ if __name__=="__main__":
     for path in image_paths:
         result = read_image(path)
         evaluate_result(result_string=result, final_stats=final_stats)
-        os.remove(path) 
     print("TOTAL STATS:")
     for stat in final_stats:
         if final_stats[stat] != 0:
@@ -121,3 +161,6 @@ if __name__=="__main__":
             on_press=on_release,
             on_release=on_release) as listener:
         listener.join()
+    
+    for path in image_paths:
+        os.remove(path) 
