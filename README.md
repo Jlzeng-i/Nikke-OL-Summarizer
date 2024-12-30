@@ -13,8 +13,10 @@ Summarizes your [Overloaded equipment](https://nikke.gg/overload-equipment/) sta
 
 ## Running
 1. In command line run readmystats.py. Wait until the secondary python window appears and prints "Ready!" Go to NIKKE on desktop and go to a NIKKE in your roster.
-
-	`python readmystats.py`
+```
+.\venv\scripts\activate.bat
+python readmystats.py
+```
 
 ### Manually Opening Stats
 1. Open an equipment and hit `\`. Do this for every equipment.

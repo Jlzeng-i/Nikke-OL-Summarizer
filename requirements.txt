@@ -3,3 +3,4 @@ pyuac
 pynput
 Pillow
 numpy
+pywin32
