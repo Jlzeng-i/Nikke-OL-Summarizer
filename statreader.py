@@ -84,6 +84,7 @@ class StatReader():
 
                 _, value, _ = result[i+1]
                 value = value.replace("%", "")
+                value = value.replace(",", ".")
                 value = value.strip()
                 try:
                     value = float(value)
