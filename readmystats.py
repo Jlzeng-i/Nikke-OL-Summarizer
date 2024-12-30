@@ -34,15 +34,14 @@ possible_values = {
 }
 
 logger = None
-image_paths = list()
-
+image_paths = dict()
 
 def on_press(key):
+    mouse = Controller()
     try:
         k = key.char  # single-char keys
     except:
         k = key.name  # other keys
-
     if k == '~' or k == '`':  # keys of interest
         logger.info("Exiting!")
         exit()
@@ -53,31 +52,49 @@ def on_press(key):
         The current pointer position is (1436, 719)
         These are the coordinates for 1080p - currently hardcoded."""
         #TODO Add scalable resolutions/use OCR to identify where to click
-        mouse = Controller()
+        
+        nikke_count = len(image_paths)
+        if nikke_count > 0:
+            nikke_count -= 1
         # moves to the visor
         click_on((1324, 616), mouse=mouse)
         time.sleep(0.3)
-        screenshot_script(image_paths)
+        screenshot_script(image_paths, nikke_count)
         click_on((1434, 627), mouse=mouse)
         time.sleep(0.1)
         # chest
         click_on((1434, 627), mouse=mouse)
         time.sleep(0.3)
-        screenshot_script(image_paths)
+        screenshot_script(image_paths, nikke_count)
         click_on((1329, 704), mouse=mouse)
         time.sleep(0.1)
         #arm
         click_on((1329, 704), mouse=mouse)
         time.sleep(0.3)
-        screenshot_script(image_paths)
+        screenshot_script(image_paths, nikke_count)
         click_on((1436, 719), mouse=mouse)
         time.sleep(0.1)
         #boots
         click_on((1436, 719), mouse=mouse)
         time.sleep(0.3)
-        screenshot_script(image_paths)
+        screenshot_script(image_paths, nikke_count)
+        click_on((1507, 450), mouse=mouse)
+        click_on((1507, 450), mouse=mouse)
+        nikke_count = len(image_paths)
+        image_paths[nikke_count] = list()
     if k == '\\':
-        screenshot_script(image_paths)
+        nikke_count = len(image_paths)
+        if nikke_count > 0:
+            nikke_count -= 1
+        print(nikke_count)
+        print(image_paths)
+        screenshot_script(image_paths, nikke_count)
+    #Move to next page/start new Nikke track
+    if k == '.':
+        #1507, 417 for 1920x1080
+        click_on((1507, 450), mouse=mouse)
+        nikke_count = len(image_paths)
+        image_paths[nikke_count] = list()
 
 
 def on_release(key):
@@ -94,12 +111,16 @@ def click_on(position, mouse):
     mouse.release(Button.left)
 
 
-def screenshot_script(image_paths):
+def screenshot_script(image_paths, nikke_count):
     logger.info("Taking screenshot")
-    x = len(image_paths) + 1
-    filename = "tmp" + str(x) + ".png"
+    if nikke_count in image_paths:
+        x = len(image_paths[nikke_count])
+    else:
+        image_paths[nikke_count] = list()
+        x = 0
+    filename = "tmp_nk" + str(nikke_count) + "ct" + str(x) + ".png"
     screenshot_screen(filename)
-    image_paths.append(filename)
+    image_paths[nikke_count].append(filename)
 
 
 def screenshot_screen(filename):
@@ -116,7 +137,6 @@ if __name__ == "__main__":
     else:
         pass
     logger = logging.getLogger("ReadMyStats")
-    sr = StatReader()
     final_stats = dict()
     for key in possible_values:
         final_stats[key] = 0
@@ -131,12 +151,25 @@ if __name__ == "__main__":
     for files in dir_list:
         if files.startswith("tmp"):
             image_paths.append(files)
+    nikkepaths = dict()
+
     for path in image_paths:
-        sr.ReadFileImage(path)
-    logger.info("TOTAL STATS:")
-    for stat in sr.totals:
-        if sr.totals[stat] != 0:
-            logger.info(stat + ": " + str(sr.totals[stat]))
+        newpath = path.replace("tmp_nk", "")
+        nikkeno = newpath.split("ct")[0]
+        if nikkeno not in nikkepaths:
+            nikkepaths[nikkeno] = list()
+        nikkepaths[nikkeno].append(path)
+    print(nikkepaths)
+    #New statreader for every nikke
+    sr = StatReader()
+    for nikke in nikkepaths:
+        sr.ResetTotals()
+        for path in nikkepaths[nikke]:
+            sr.ReadFileImage(path)
+        logger.info("TOTAL STATS FOR NIKKE #" + str(nikke) + ":")
+        for stat in sr.totals:
+            if sr.totals[stat] != 0:
+                logger.info(stat + ": " + str(sr.totals[stat]))
 
     logger.info("Press escape to leave")
     with keyboard.Listener(on_press=on_release, on_release=on_release) as listener:

@@ -64,7 +64,7 @@ class StatReader():
     def ReadImage(self, img: Image):
         img = img.convert("L") # Convert the image to grayscale
         img = img.resize((1920, 1080), Image.Resampling.LANCZOS)
-        img = img.crop((737, 727, 737+417, 727+115))
+        img = img.crop((737, 727, 737+417, 727+120))
         npimg = np.array(img)
 
         result = self.ocr.readtext(npimg)
@@ -137,3 +137,7 @@ class StatReader():
     def ReadFileImage(self, filepath):
         img = Image.open(filepath)
         self.ReadImage(img)
+    
+    def ResetTotals(self):
+        for k in possible_values.keys():
+            self.totals[k] = 0.0

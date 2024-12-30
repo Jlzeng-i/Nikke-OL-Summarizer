@@ -162,3 +162,4 @@ cython_debug/
 2 temp_output_image.png
 1 temp_output_image.png
 0 temp_output_image.png
+*.png

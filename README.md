@@ -19,7 +19,7 @@ python readmystats.py
 ```
 
 ### Manually Opening Stats
-1. Open an equipment and hit `\`. Do this for every equipment.
+1. Open an equipment and hit `\`. Do this for every equipment per Nikke you want to record. Change pages using "." which will then allow you to segment each NIKKE's stats separately. The separated NIKKE feature is only working for 1080p currently, so other resolutions are essentially limited to one NIKKE at a time at this moment.
 
 ### Automatically Record Stats
 1. Open a NIKKE page and hit `+`. This currently only works for 1080p.
@@ -40,7 +40,7 @@ Increase DEF: 4.77
 ```
 
 ## TODO
-- Automate the gear selection/screenshotting process
+- ~Automate the gear selection/screenshotting process~ DONE
 - Allow you to evaluate gear from multiple NIKKE
 - Individually store gear stats
 - Allow you to store data in a discord bot
