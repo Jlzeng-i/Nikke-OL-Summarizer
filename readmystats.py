@@ -78,23 +78,28 @@ def on_press(key):
         click_on((1436, 719), mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths, nikke_count)
+        logger.info("Moving to new NIKKE")
         click_on((1507, 450), mouse=mouse)
         click_on((1507, 450), mouse=mouse)
         nikke_count = len(image_paths)
+        logger.info("Creating a new NIKKE track")
         image_paths[nikke_count] = list()
     if k == '\\':
         nikke_count = len(image_paths)
         if nikke_count > 0:
             nikke_count -= 1
-        print(nikke_count)
-        print(image_paths)
         screenshot_script(image_paths, nikke_count)
     #Move to next page/start new Nikke track
     if k == '.':
         #1507, 417 for 1920x1080
         click_on((1507, 450), mouse=mouse)
         nikke_count = len(image_paths)
-        image_paths[nikke_count] = list()
+        logger.info("Moving to new NIKKE")
+        if nikke_count > 0:
+            if len(image_paths[nikke_count-1]) != 0:
+                logger.info("Creating a new NIKKE track")
+                image_paths[nikke_count] = list()
+                
 
 
 def on_release(key):
