@@ -1,4 +1,3 @@
-import easyocr
 from PIL import Image, ImageGrab
 import numpy as np
 from pynput import keyboard
@@ -8,6 +7,7 @@ import os
 import sys
 import time
 import logging
+from statreader import StatReader
 
 # Configure the logging
 logging.basicConfig(
@@ -33,54 +33,7 @@ possible_values = {
     "Increase DEF": [4.77, 5.47, 6.18, 6.88, 7.59, 8.29, 9.00, 9.70, 10.40, 11.11, 11.81, 12.52, 13.22, 13.93, 14.63],
 }
 
-reader = None  # easyOCR reader
 logger = None
-
-
-# IMAGE_PATH => Path to the image
-def alter_image(IMAGE_PATH="image.png"):
-    img = Image.open(IMAGE_PATH).convert("RGB")
-    newsize = (1920, 1080)
-    img = img.resize(newsize)
-
-    img.crop((700, 715, 1156, 860)).save(IMAGE_PATH)
-
-
-def read_image(path="tmp_file.png"):
-    result = reader.readtext(path)
-    result_string = ""
-    for detection in result:
-        result_string += detection[1] + " "
-    return result_string
-
-
-def evaluate_result(result_string, final_stats):
-    stat_lines = result_string.split("%")
-    for stat_line in stat_lines:
-        stat_split = stat_line.rsplit(" ", 1)
-        if stat_split[0] in possible_values:
-            if (
-                stat_split[1].lower() == "il.m1"
-                or stat_split[1].lower() == "ii.ii"
-                or stat_split[1].lower() == "ll.ll"
-                or stat_split[1].lower() == "ii.ll"
-                or stat_split[1].lower() == "ll.ii"
-            ):
-                stat_split[1] = "11.11"
-            if stat_split[1] in possible_values[stat_split[0]]:
-                final_stats[stat_split[0]] += float(stat_split[1])
-            else:
-                if str(float(stat_split[1]) / 100) in possible_values[stat_split[0]]:
-                    final_stats[stat_split[0]] += float(stat_split[1]) / 100
-                else:
-                    logger.error("Line: " + stat_line)
-        else:
-            if not stat_split[0].isspace() and stat_split[0]:
-                logger.warning("Unexpected attribute: ")
-                logger.warning(stat_split)
-                logger.warning("You can manually input this to accurately represent your equipment.")
-
-
 image_paths = list()
 
 
@@ -91,31 +44,35 @@ def on_press(key):
         k = key.name  # other keys
 
     if k == '~' or k == '`':  # keys of interest
-        # self.keys.append(k)  # store it in global-like variable
         logger.info("Exiting!")
         exit()
     if k == '+':
         """The current pointer position is (1324, 616)
         The current pointer position is (1434, 627)
         The current pointer position is (1329, 704)
-        The current pointer position is (1436, 719)"""
+        The current pointer position is (1436, 719)
+        These are the coordinates for 1080p - currently hardcoded."""
+        #TODO Add scalable resolutions/use OCR to identify where to click
         mouse = Controller()
-        # moves to the first equipment
+        # moves to the visor
         click_on((1324, 616), mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths)
         click_on((1434, 627), mouse=mouse)
         time.sleep(0.1)
+        # chest
         click_on((1434, 627), mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths)
         click_on((1329, 704), mouse=mouse)
         time.sleep(0.1)
+        #arm
         click_on((1329, 704), mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths)
         click_on((1436, 719), mouse=mouse)
         time.sleep(0.1)
+        #boots
         click_on((1436, 719), mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths)
@@ -142,7 +99,6 @@ def screenshot_script(image_paths):
     x = len(image_paths) + 1
     filename = "tmp" + str(x) + ".png"
     screenshot_screen(filename)
-    alter_image(filename)
     image_paths.append(filename)
 
 
@@ -159,9 +115,8 @@ if __name__ == "__main__":
         sys.exit()
     else:
         pass
-    reader = easyocr.Reader(["en"])
     logger = logging.getLogger("ReadMyStats")
-
+    sr = StatReader()
     final_stats = dict()
     for key in possible_values:
         final_stats[key] = 0
@@ -172,18 +127,16 @@ if __name__ == "__main__":
 
     # After collecting images, do the reading all at once
     dir_list = os.listdir()
-
     image_paths = list()
     for files in dir_list:
         if files.startswith("tmp"):
             image_paths.append(files)
     for path in image_paths:
-        result = read_image(path)
-        evaluate_result(result_string=result, final_stats=final_stats)
+        sr.ReadFileImage(path)
     logger.info("TOTAL STATS:")
-    for stat in final_stats:
-        if final_stats[stat] != 0:
-            logger.info(stat + ": " + str(final_stats[stat]))
+    for stat in sr.totals:
+        if sr.totals[stat] != 0:
+            logger.info(stat + ": " + str(sr.totals[stat]))
 
     logger.info("Press escape to leave")
     with keyboard.Listener(on_press=on_release, on_release=on_release) as listener:
