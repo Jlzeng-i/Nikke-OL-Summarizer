@@ -3,18 +3,17 @@ import logging
 from statreader import StatReader
 
 logging.basicConfig(
-    level=logging.ERROR,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=
-    [
-        #logging.FileHandler("log.txt"),
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        # logging.FileHandler("log.txt"),
         logging.StreamHandler()
-    ]
+    ],
 )
 
-# Test cases
-class TestOCR(unittest.TestCase):
 
+# Test cases
+class TestStatReader(unittest.TestCase):
 
     def test_Alice(self):
         sr = StatReader()
@@ -24,16 +23,15 @@ class TestOCR(unittest.TestCase):
         sr.ReadFileImage("./unittests/Alice Arm.jpg")
         sr.ReadFileImage("./unittests/Alice Leg.jpg")
 
-        self.assertEqual(sr.totals["increase element damage dealt"], 31.69)
-        self.assertEqual(sr.totals["increase max ammunition capacity"], 292.16)
-        self.assertEqual(sr.totals["increase critical damage"], 0.0)
-        self.assertEqual(sr.totals["increase critical rate"], 2.64)
-        self.assertEqual(sr.totals["increase charge damage"], 0.0)
-        self.assertEqual(sr.totals["increase charge speed"], 10.43)
-        self.assertEqual(sr.totals["increase hit rate"], 0.0)
-        self.assertEqual(sr.totals["increase atk"], 0.0)
-        self.assertEqual(sr.totals["increase def"], 5.47)
-
+        self.assertEqual(f"{sr.totals['element damage dealt']:.2f}", "31.69")
+        self.assertEqual(f"{sr.totals['max ammunition capacity']:.2f}", "292.16")
+        self.assertEqual(f"{sr.totals['critical damage']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['critical rate']:.2f}", "2.64")
+        self.assertEqual(f"{sr.totals['charge damage']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['charge speed']:.2f}", "10.43")
+        self.assertEqual(f"{sr.totals['hit rate']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['atk']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['def']:.2f}", "5.47")
 
     def test_Emilia(self):
         sr = StatReader()
@@ -43,16 +41,15 @@ class TestOCR(unittest.TestCase):
         sr.ReadFileImage("./unittests/Emilia Arm.jpg")
         sr.ReadFileImage("./unittests/Emilia Leg.jpg")
 
-        self.assertEqual(sr.totals["increase element damage dealt"], 16.55)
-        self.assertEqual(sr.totals["increase max ammunition capacity"], 190.36)
-        self.assertEqual(sr.totals["increase critical damage"], 16.44)
-        self.assertEqual(sr.totals["increase critical rate"], 10.06)
-        self.assertEqual(sr.totals["increase charge damage"], 0.0)
-        self.assertEqual(sr.totals["increase charge speed"], 0.0)
-        self.assertEqual(sr.totals["increase hit rate"], 0.0)
-        self.assertEqual(sr.totals["increase atk"], 9.00)
-        self.assertEqual(sr.totals["increase def"], 0.0)
-
+        self.assertEqual(f"{sr.totals['element damage dealt']:.2f}", "16.55")
+        self.assertEqual(f"{sr.totals['max ammunition capacity']:.2f}", "190.36")
+        self.assertEqual(f"{sr.totals['critical damage']:.2f}", "16.44")
+        self.assertEqual(f"{sr.totals['critical rate']:.2f}", "10.06")
+        self.assertEqual(f"{sr.totals['charge damage']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['charge speed']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['hit rate']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['atk']:.2f}", "9.00")
+        self.assertEqual(f"{sr.totals['def']:.2f}", "0.00")
 
     def test_Biscuit(self):
         sr = StatReader()
@@ -60,15 +57,15 @@ class TestOCR(unittest.TestCase):
         sr.ReadFileImage("./unittests/Biscuit Torso.jpg")
         sr.ReadFileImage("./unittests/Biscuit Leg.jpg")
 
-        self.assertEqual(sr.totals["increase element damage dealt"], 38.71)
-        self.assertEqual(sr.totals["increase max ammunition capacity"], 27.84)
-        self.assertEqual(sr.totals["increase critical damage"], 0.0)
-        self.assertEqual(sr.totals["increase critical rate"], 0.0)
-        self.assertEqual(sr.totals["increase charge damage"], 0.0)
-        self.assertEqual(sr.totals["increase charge speed"], 4.92)
-        self.assertEqual(sr.totals["increase hit rate"], 0.0)
-        self.assertEqual(sr.totals["increase atk"], 0.0)
-        self.assertEqual(sr.totals["increase def"], 11.81)
+        self.assertEqual(f"{sr.totals['element damage dealt']:.2f}", "38.71")
+        self.assertEqual(f"{sr.totals['max ammunition capacity']:.2f}", "27.84")
+        self.assertEqual(f"{sr.totals['critical damage']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['critical rate']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['charge damage']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['charge speed']:.2f}", "4.92")
+        self.assertEqual(f"{sr.totals['hit rate']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['atk']:.2f}", "0.00")
+        self.assertEqual(f"{sr.totals['def']:.2f}", "11.81")
 
 
 if __name__ == "__main__":
