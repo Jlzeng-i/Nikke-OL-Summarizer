@@ -40,7 +40,13 @@ def evaluate_result(result_string, final_stats):
     result_string = result_string.replace("Effect not obtained ", "")
     result_string = result_string.replace("The effect will be enabled when entering a battle. ", "")
     result_string = result_string.replace("The effect will be enabled when entering a battle_ ", "")
+    result_string = result_string.replace("The effect will be enabled when entering a battle ", "")
+    result_string = result_string.replace("The effect will be enabled when entering battle. ", "")
+    result_string = result_string.replace("The effect will be enabled when entering battle_ ", "")
+    result_string = result_string.replace("The effect will be enabled when entering battle ", "")
     result_string = result_string.replace("Reset Chande Effects ", "")
+    result_string = result_string.replace("Reset Chande Effects ", "")
+    result_string = result_string.replace("Chande Reset Effects ", "")
     stat_lines = result_string.split("% ")
     for stat_line in stat_lines:
         stat_split = stat_line.rsplit(" ", 1)
