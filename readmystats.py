@@ -24,7 +24,7 @@ def alter_image(IMAGE_PATH="image.png"):
     newsize = (1920, 1080)
     img = img.resize(newsize)
 
-    img.crop((700, 750, 1156, 860)).save(IMAGE_PATH)
+    img.crop((700, 715, 1156, 860)).save(IMAGE_PATH)
 
 #uncomment to load new image
 #alter_image("image.png") 
@@ -38,6 +38,9 @@ def read_image(path="tmp_file.png"):
 
 def evaluate_result(result_string, final_stats):
     result_string = result_string.replace("Effect not obtained ", "")
+    result_string = result_string.replace("The effect will be enabled when entering a battle. ", "")
+    result_string = result_string.replace("The effect will be enabled when entering a battle_ ", "")
+    result_string = result_string.replace("Reset Chande Effects ", "")
     stat_lines = result_string.split("% ")
     for stat_line in stat_lines:
         stat_split = stat_line.rsplit(" ", 1)

@@ -26,7 +26,7 @@
  Individually store gear stats\
  Allow you to store data in a discord bot\
  Allow it to run on CUDA but I'm lazy and its very small work so I haven't felt the need to do anything
- Just realized that if you haven't fully upgraded an equipment it takes up a different area. Great.
+ ~Just realized that if you haven't fully upgraded an equipment it takes up a different area. Great.~ DONE
 
 ## Limitations
   OCR will sometimes just confused numbers for letters - I don't think I can catch all of these but I do print these out for the user to use to fill in later.\
