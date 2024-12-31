@@ -35,8 +35,15 @@ possible_values = {
 
 logger = None
 image_paths = dict()
+all_coords = list()
 
 def on_press(key):
+    global all_coords
+    #print(len(all_coords))
+    if not all_coords:
+        all_coords = read_coords()
+        #print(len(all_coords))
+        #logger.info(read_coords())
     mouse = Controller()
     try:
         k = key.char  # single-char keys
@@ -46,41 +53,36 @@ def on_press(key):
         logger.info("Exiting!")
         exit()
     if k == '+':
-        """The current pointer position is (1324, 616)
-        The current pointer position is (1434, 627)
-        The current pointer position is (1329, 704)
-        The current pointer position is (1436, 719)
-        These are the coordinates for 1080p - currently hardcoded."""
         #TODO Add scalable resolutions/use OCR to identify where to click
-        
         nikke_count = len(image_paths)
         if nikke_count > 0:
             nikke_count -= 1
         # moves to the visor
-        click_on((1324, 616), mouse=mouse)
+        print(all_coords)
+        click_on(all_coords[0], mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths, nikke_count)
-        click_on((1434, 627), mouse=mouse)
+        click_on(all_coords[1], mouse=mouse)
         time.sleep(0.1)
         # chest
-        click_on((1434, 627), mouse=mouse)
+        click_on(all_coords[1], mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths, nikke_count)
-        click_on((1329, 704), mouse=mouse)
+        click_on(all_coords[2], mouse=mouse)
         time.sleep(0.1)
         #arm
-        click_on((1329, 704), mouse=mouse)
+        click_on(all_coords[2], mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths, nikke_count)
-        click_on((1436, 719), mouse=mouse)
+        click_on(all_coords[3], mouse=mouse)
         time.sleep(0.1)
         #boots
-        click_on((1436, 719), mouse=mouse)
+        click_on(all_coords[3], mouse=mouse)
         time.sleep(0.3)
         screenshot_script(image_paths, nikke_count)
         logger.info("Moving to new NIKKE")
-        click_on((1507, 450), mouse=mouse)
-        click_on((1507, 450), mouse=mouse)
+        click_on(all_coords[4], mouse=mouse)
+        click_on(all_coords[4], mouse=mouse)
         nikke_count = len(image_paths)
         logger.info("Creating a new NIKKE track")
         image_paths[nikke_count] = list()
@@ -92,13 +94,14 @@ def on_press(key):
     #Move to next page/start new Nikke track
     if k == '.':
         #1507, 417 for 1920x1080
-        click_on((1507, 450), mouse=mouse)
+        click_on(all_coords[4], mouse=mouse)
         nikke_count = len(image_paths)
         logger.info("Moving to new NIKKE")
         if nikke_count > 0:
             if len(image_paths[nikke_count-1]) != 0:
                 logger.info("Creating a new NIKKE track")
                 image_paths[nikke_count] = list()
+        
                 
 
 
@@ -133,6 +136,32 @@ def screenshot_screen(filename):
     screenshot.save(filename)
     screenshot.close()
 
+def create_coord_file():
+    """The current pointer position is (1324, 616)
+        The current pointer position is (1434, 627)
+        The current pointer position is (1329, 704)
+        The current pointer position is (1436, 719)"""
+    dir_list = os.listdir()
+    if ".config" in dir_list:
+        return
+    f = open(".config", "x")
+    f.write("1324,616\n")
+    f.write("1434,627\n")
+    f.write("1329,704\n")
+    f.write("1436,719\n")
+    f.write("1507,450\n")
+    f.close()
+
+def read_coords():
+    f = open(".config", "r")
+    listed_cords = list()
+    for line in f:
+        line = line.replace("\n", "")
+        cords = line.split(",")
+        listed_cords.append((int(cords[0]), int(cords[1])))
+    f.close()
+    return listed_cords
+
 
 if __name__ == "__main__":
     if not pyuac.isUserAdmin():
@@ -141,6 +170,7 @@ if __name__ == "__main__":
         sys.exit()
     else:
         pass
+    create_coord_file()
     logger = logging.getLogger("ReadMyStats")
     final_stats = dict()
     for key in possible_values:
