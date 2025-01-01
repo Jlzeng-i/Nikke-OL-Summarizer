@@ -65,6 +65,7 @@ class StatReader():
         img = img.convert("L") # Convert the image to grayscale
         img = img.resize((1920, 1080), Image.Resampling.LANCZOS)
         img = img.crop((737, 727, 737+417, 727+120))
+        prev_totals = self.totals.copy()
         npimg = np.array(img)
 
         result = self.ocr.readtext(npimg)
@@ -132,11 +133,15 @@ class StatReader():
                     continue
                 self.logger.warning(f"bad text {i}[{text}]")
                 continue
+        for totals in self.totals:
+            prev_totals[totals] = self.totals[totals] - prev_totals[totals]
+        return prev_totals
 
 
     def ReadFileImage(self, filepath):
         img = Image.open(filepath)
-        self.ReadImage(img)
+        prev_totals = self.ReadImage(img)
+        return prev_totals
     
     def ResetTotals(self):
         for k in possible_values.keys():

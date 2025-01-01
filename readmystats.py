@@ -200,7 +200,11 @@ if __name__ == "__main__":
     for nikke in nikkepaths:
         sr.ResetTotals()
         for path in nikkepaths[nikke]:
-            sr.ReadFileImage(path)
+            part_stats = sr.ReadFileImage(path)
+            #Prints each parts stats individually
+            """for stat in part_stats:
+                if part_stats[stat] != 0:
+                    logger.info(stat + ": " + str(part_stats[stat]))"""
         logger.info("TOTAL STATS FOR NIKKE #" + str(nikke) + ":")
         for stat in sr.totals:
             if sr.totals[stat] != 0:
