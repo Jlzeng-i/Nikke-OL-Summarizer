@@ -164,3 +164,4 @@ cython_debug/
 0 temp_output_image.png
 *.png
 .config
+stats_*.txt

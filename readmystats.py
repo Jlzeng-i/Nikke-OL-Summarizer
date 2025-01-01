@@ -7,7 +7,9 @@ import os
 import sys
 import time
 import logging
+from datetime import datetime
 from statreader import StatReader
+import tkinter as tk
 
 # Configure the logging
 logging.basicConfig(
@@ -101,8 +103,16 @@ def on_press(key):
             if len(image_paths[nikke_count-1]) != 0:
                 logger.info("Creating a new NIKKE track")
                 image_paths[nikke_count] = list()
-        
-                
+    if k == ']':
+        coordinates = start_calibration()
+        logger.info(coordinates)
+        os.remove(".config")
+        create_coord_file(coordinates)
+        all_coords = read_coords()
+        #Has to refocus window
+        click_on(all_coords[0], mouse=mouse)
+        time.sleep(0.3)
+        click_on(all_coords[1], mouse=mouse)
 
 
 def on_release(key):
@@ -136,20 +146,21 @@ def screenshot_screen(filename):
     screenshot.save(filename)
     screenshot.close()
 
-def create_coord_file():
-    """The current pointer position is (1324, 616)
-        The current pointer position is (1434, 627)
-        The current pointer position is (1329, 704)
-        The current pointer position is (1436, 719)"""
+def create_coord_file(cord_dict=None):
     dir_list = os.listdir()
     if ".config" in dir_list:
         return
     f = open(".config", "x")
-    f.write("1324,616\n")
-    f.write("1434,627\n")
-    f.write("1329,704\n")
-    f.write("1436,719\n")
-    f.write("1507,450\n")
+    if cord_dict and len(cord_dict) == 5:
+        for coord in cord_dict:
+            f.write(f"{coord[0]},{coord[1]}\n")
+    else:
+        #Default coordinates
+        f.write("1324,616\n")
+        f.write("1434,627\n")
+        f.write("1329,704\n")
+        f.write("1436,719\n")
+        f.write("1507,450\n")
     f.close()
 
 def read_coords():
@@ -162,6 +173,71 @@ def read_coords():
     f.close()
     return listed_cords
 
+def start_calibration():
+    def on_click(event):
+        coords.append((event.x, event.y))
+        #logger.info(f"Captured coordinates: {event.x}, {event.y}")
+        if len(coords) < 2:
+            label.config(text=f"Point {len(coords)} captured for Visor. Please click on the Chest gear piece.")
+        elif len(coords) < 3:
+            label.config(text=f"Point {len(coords)} captured for Chest. Please click on the Arm gear piece.")
+        elif len(coords) < 4:
+            label.config(text=f"Point {len(coords)} captured for Arm. Please click on the Leg gear piece.")
+        elif len(coords) < 5:
+            label.config(text=f"Point {len(coords)} captured for Leg. Please click on the Right arrow to go to the next NIKKE.")
+        else:
+            label.config(text="Calibration complete. Closing window...")
+            root.after(1000, root.destroy)
+
+    def on_key_press(event):
+        if event.keysym == "Escape":
+            root.destroy()
+
+    coords = []
+    root = tk.Tk()
+    root.title("Calibration")
+    root.attributes("-fullscreen", True) 
+    root.attributes("-alpha", 0.5) 
+    root.attributes("-topmost", True) 
+    root.configure(bg="gray") 
+
+    label = tk.Label(root, text="To calibrate, please click on the Visor gear piece.\nPress ESC to exit.",
+                     font=("Arial", 24), bg="gray", fg="white")
+    label.pack(pady=20)
+
+    root.bind("<Button-1>", on_click) 
+    root.bind("<Escape>", on_key_press)
+
+    root.mainloop()
+
+    return coords
+
+def start_up():
+    def on_click(event):
+         root.after(500, root.destroy)
+
+    coords = []
+    root = tk.Tk()
+    root.title("Calibration")
+    root.attributes("-fullscreen", True) 
+    root.attributes("-alpha", 0.8) 
+    root.attributes("-topmost", True) 
+    root.configure(bg="black") 
+
+    label = tk.Label(root, text="Thanks for using our tool. Here are the buttons you may need.\n"
+                     "To start, we recommend pressing \"]\" to calibrate the tool.\n"
+                     "Then you can press \"+\" to automatically capture each NIKKE's gear.\n"
+                     "After you have captured what you have needed, press ~ or esc to stop the tool.\n"
+                     "Check the folder this script is running in for a \"stats_*\" file that contains the data!\n"
+                     "CLICK TO CLOSE THIS WINDOW <3",
+                     font=("Arial", 24), bg="black", fg="white")
+    label.pack(pady=20)
+
+    root.bind("<Button-1>", on_click) 
+
+    root.mainloop()
+
+    return coords
 
 if __name__ == "__main__":
     if not pyuac.isUserAdmin():
@@ -173,6 +249,7 @@ if __name__ == "__main__":
     create_coord_file()
     logger = logging.getLogger("ReadMyStats")
     final_stats = dict()
+    start_up()
     for key in possible_values:
         final_stats[key] = 0
 
@@ -197,22 +274,29 @@ if __name__ == "__main__":
     print(nikkepaths)
     #New statreader for every nikke
     sr = StatReader()
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"stats_{timestamp}.txt"
+    stat_file = open(filename, "x")
     for nikke in nikkepaths:
         sr.ResetTotals()
+        stat_file.write("NIKKE " + nikke + ": \n")
+        gear_count = 1
         for path in nikkepaths[nikke]:
+            stat_file.write("Gear " + str(gear_count) + ": \n")
+            gear_count += 1
             part_stats = sr.ReadFileImage(path)
             #Prints each parts stats individually
-            """for stat in part_stats:
+            for stat in part_stats:
                 if part_stats[stat] != 0:
-                    logger.info(stat + ": " + str(part_stats[stat]))"""
-        logger.info("TOTAL STATS FOR NIKKE #" + str(nikke) + ":")
+                    stat_file.write(stat + ": " + str(part_stats[stat]) + "\n")
+        stat_file.write("TOTAL STATS FOR NIKKE #" + str(nikke) + ": \n")
         for stat in sr.totals:
             if sr.totals[stat] != 0:
-                logger.info(stat + ": " + str(sr.totals[stat]))
+                stat_file.write(stat + ": " + str(sr.totals[stat]) + "\n")
 
-    logger.info("Press escape to leave")
-    with keyboard.Listener(on_press=on_release, on_release=on_release) as listener:
-        listener.join()
+    #logger.info("Press escape to leave")
+    #with keyboard.Listener(on_press=on_release, on_release=on_release) as listener:
+    #    listener.join()
 
     for path in image_paths:
         os.remove(path)
